@@ -38,7 +38,7 @@ func ParseYAMLContent(content []byte) ([]model.Resource, error) {
 
 	// 分割YAML文件中的多个文档
 	docs := bytes.Split(content, []byte("---\n"))
-	
+
 	for _, doc := range docs {
 		// 跳过空文档
 		if isEmptyYAML(doc) {

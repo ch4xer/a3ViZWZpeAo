@@ -24,16 +24,16 @@ type Diagnostic struct {
 }
 
 type WithContext struct {
-	Diagnostic  Diagnostic        `json:"Diagnostic"`
-	Check       string            `json:"Check"`
-	Remediation string            `json:"Remediation"`
+	Diagnostic  Diagnostic         `json:"Diagnostic"`
+	Check       string             `json:"Check"`
+	Remediation string             `json:"Remediation"`
 	Object      lintcontext.Object `json:"Object"`
 }
 
 type Result struct {
-	Checks  []Check        `json:"Checks"`
-	Reports []WithContext  `json:"Reports"`
-	Summary Summary        `json:"Summary"`
+	Checks  []Check       `json:"Checks"`
+	Reports []WithContext `json:"Reports"`
+	Summary Summary       `json:"Summary"`
 }
 
 type CheckStatus string

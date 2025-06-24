@@ -1,17 +1,17 @@
 # KubeFix CLI
 
-一个用于导出Kubernetes命名空间资源的命令行工具。
+一个用于导出 Kubernetes 命名空间资源的命令行工具。
 
 ## 功能特点
 
-- 连接到Kubernetes集群
-- 导出指定命名空间下的所有资源为YAML文件
+- 连接到 Kubernetes 集群
+- 导出指定命名空间下的所有资源为 YAML 文件
 - 自动清理资源元数据中的不必要字段
 - 按资源类型和名称组织文件
 
 ## 安装
 
-确保你的系统已安装了Go语言环境（推荐Go 1.21或更高版本），然后运行：
+确保你的系统已安装了 Go 语言环境（推荐 Go 1.21 或更高版本），然后运行：
 
 ```bash
 git clone https://github.com/yourusername/kubefix-cli.git
@@ -28,16 +28,16 @@ go build -o kubefix-cli
 
 ### 参数说明
 
-- `-namespace`: 要导出资源的Kubernetes命名空间（必填）
-- `-kubeconfig`: kubeconfig文件路径（可选，默认为~/.kube/config）
-- `-output`: 导出的YAML文件保存目录（可选，默认为./exported-resources）
+- `-namespace`: 要导出资源的 Kubernetes 命名空间（必填）
+- `-kubeconfig`: kubeconfig 文件路径（可选，默认为~/.kube/config）
+- `-output`: 导出的 YAML 文件保存目录（可选，默认为./exported-resources）
 - `-type`: 仅导出指定类型的资源，多个类型用逗号分隔（可选，例如 "pods,services"）
 - `-exclude`: 排除指定类型的资源，多个类型用逗号分隔（可选，例如 "ciliumendpoints,leases"）
-- `-show-owners`: 是否在导出的YAML中显示所有者引用（可选，默认为false）
+- `-show-owners`: 是否在导出的 YAML 中显示所有者引用（可选，默认为 false）
 
 ## 示例
 
-```bash
+````bash
 # 导出default命名空间中的所有资源
 $ ./kubefix-cli -namespace=default
 
@@ -73,7 +73,7 @@ $ ./kubefix-cli -namespace=default -show-owners
 
 ```bash
 ./kubefix-cli -namespace=default -type=pods,services,deployments
-```
+````
 
 ### 如何排除某些资源类型？
 
@@ -82,10 +82,12 @@ $ ./kubefix-cli -namespace=default -show-owners
 ```bash
 ./kubefix-cli -namespace=default -exclude=ciliumendpoints,events,leases
 ```
+
     - Exported: configmap-nginx-config.yaml
     - ...
 
 Successfully exported 10 resource types to ./exported-resources
+
 ```
 
 ## 项目结构
@@ -102,3 +104,4 @@ Successfully exported 10 resource types to ./exported-resources
 ## 许可证
 
 MIT
+```

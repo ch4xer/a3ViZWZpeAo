@@ -30,7 +30,7 @@ var (
 var extractCmd = &cobra.Command{
 	Use:   "extract",
 	Short: "Extract native resources from Kubernetes",
-	Run: extract,
+	Run:   extract,
 }
 
 // extractCmd 处理提取资源的命令
