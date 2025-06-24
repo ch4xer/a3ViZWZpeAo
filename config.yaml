@@ -1,0 +1,10 @@
+kubeconfig: "/home/ch4ser/.kube/config"
+ignoreNamespaces:
+  - kube-system
+  - kube-public
+  - default
+  - cilium-secrets
+  - kube-node-lease
+database: "postgres://user:pass@localhost:5432/kubefix"
+resourceDir: "./exported-resources"
+lintDir: "./lint-results"
