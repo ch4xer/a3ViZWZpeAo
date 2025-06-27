@@ -4,8 +4,9 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"kubefix-cli/conf"
 	"kubefix-cli/pkg/linter"
-	"log"
+	"kubefix-cli/pkg/utils"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -14,10 +15,6 @@ import (
 	"github.com/spf13/cobra"
 )
 
-var (
-	lintInputDir  string
-	lintOutputDir string
-)
 
 var lintCmd = &cobra.Command{
 	Use:   "lint",
@@ -26,41 +23,35 @@ var lintCmd = &cobra.Command{
 }
 
 func lint(cmd *cobra.Command, args []string) {
-	if _, err := os.Stat(lintInputDir); os.IsNotExist(err) {
-		fmt.Printf("Error: Input directory '%s' does not exist\n", lintInputDir)
+	if _, err := os.Stat(conf.ResourceDir); os.IsNotExist(err) {
+		fmt.Printf("Error: Input directory '%s' does not exist\n", conf.ResourceDir)
 		os.Exit(1)
 	}
 
-	if err := os.MkdirAll(lintOutputDir, 0755); err != nil {
-		fmt.Printf("Error creating output directory '%s': %v\n", lintOutputDir, err)
+	if err := os.MkdirAll(conf.LintDir, 0755); err != nil {
+		fmt.Printf("Error creating output directory '%s': %v\n", conf.LintDir, err)
 		os.Exit(1)
 	}
+	utils.CleanDirectory(conf.LintDir)
 
-	files, err := filepath.Glob(filepath.Join(lintInputDir, "*.yaml"))
+	files, err := filepath.Glob(filepath.Join(conf.ResourceDir, "*.yaml"))
 	if err != nil {
 		fmt.Printf("Error scanning input directory: %v\n", err)
 		os.Exit(1)
 	}
 
-	if len(files) == 0 {
-		fmt.Printf("No YAML files found in '%s'\n", lintInputDir)
-		return
-	}
-
-	fmt.Printf("Found %d YAML files to analyze\n", len(files))
-
 	for _, file := range files {
 		lintFile(file)
 	}
 
-	fmt.Printf("\nLint completed. Results saved to: %s\n", lintOutputDir)
+	fmt.Printf("\nLint completed. Results saved to: %s\n", conf.LintDir)
 }
 
 // lintFile: lint one file with kube-linter
 func lintFile(filePath string) {
 	baseFileName := filepath.Base(filePath)
 	fileNameWithoutExt := strings.TrimSuffix(baseFileName, filepath.Ext(baseFileName))
-	outputFilePath := filepath.Join(lintOutputDir, fileNameWithoutExt+".txt")
+	outputFilePath := filepath.Join(conf.LintDir, fileNameWithoutExt+".txt")
 
 	fmt.Printf("Linting: %s (extracting only Reports data)\n", baseFileName)
 
@@ -85,7 +76,6 @@ func lintFile(filePath string) {
 		for _, report := range lintResult.Reports {
 			diagnosticOutput = append(diagnosticOutput, []byte(report.Diagnostic.Message)...)
 			diagnosticOutput = append(diagnosticOutput, []byte("\n")...)
-			log.Printf("Diagnostic: %s", report.Diagnostic.Message)
 		}
 
 		if err := os.WriteFile(outputFilePath, diagnosticOutput, 0644); err != nil {
@@ -99,7 +89,4 @@ func lintFile(filePath string) {
 
 func init() {
 	rootCmd.AddCommand(lintCmd)
-
-	lintCmd.Flags().StringVarP(&lintInputDir, "input", "i", "./exported-resources", "Directory containing Kubernetes YAML files to lint")
-	lintCmd.Flags().StringVarP(&lintOutputDir, "output", "o", "./lint-results", "Directory where lint results will be saved as JSON")
 }

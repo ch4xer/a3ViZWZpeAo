@@ -12,6 +12,10 @@ var (
 	Kubeconfig       string
 	IgnoreNamespaces []string
 	Database         string
+	ResourceDir string
+	LintDir string
+	FixDir string
+	LLMApi string
 )
 
 func init() {
@@ -30,6 +34,10 @@ func init() {
 		Kubeconfig       string   `yaml:"kubeconfig"`
 		IgnoreNamespaces []string `yaml:"ignoreNamespaces"`
 		Database         string   `yaml:"database"`
+		ResourceDir      string   `yaml:"resourceDir"`
+		LintDir          string   `yaml:"lintDir"`
+		FixDir		  string   `yaml:"fixDir"`
+		LLMApi string   `yaml:"llmApi"`
 	}
 
 	if err := yaml.Unmarshal(data, &cfg); err != nil {
@@ -39,6 +47,10 @@ func init() {
 	Kubeconfig = cfg.Kubeconfig
 	IgnoreNamespaces = cfg.IgnoreNamespaces
 	Database = cfg.Database
+	ResourceDir = cfg.ResourceDir
+	LintDir = cfg.LintDir
+	FixDir = cfg.FixDir
+	LLMApi = cfg.LLMApi
 }
 
 func CdRootDir(path string) {

@@ -23,6 +23,7 @@ profile.cov
 bin/
 exported-resources/
 lint-results/
+fix-results/
 
 # Go workspace file
 go.work

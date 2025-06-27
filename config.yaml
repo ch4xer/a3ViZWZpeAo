@@ -8,3 +8,5 @@ ignoreNamespaces:
 database: "postgres://user:pass@localhost:5432/kubefix"
 resourceDir: "./exported-resources"
 lintDir: "./lint-results"
+fixDir: "./fix-results"
+llmApi: "http://localhost:8000/fix"
