@@ -12,10 +12,11 @@ var (
 	Kubeconfig       string
 	IgnoreNamespaces []string
 	Database         string
-	ResourceDir string
-	LintDir string
-	FixDir string
-	LLMApi string
+	ResourceDir      string
+	LintDir          string
+	FixDir           string
+	ValidateDir      string
+	LLMApi           string
 )
 
 func init() {
@@ -36,8 +37,9 @@ func init() {
 		Database         string   `yaml:"database"`
 		ResourceDir      string   `yaml:"resourceDir"`
 		LintDir          string   `yaml:"lintDir"`
-		FixDir		  string   `yaml:"fixDir"`
-		LLMApi string   `yaml:"llmApi"`
+		FixDir           string   `yaml:"fixDir"`
+		ValidateDir      string   `yaml:"validateDir"`
+		LLMApi           string   `yaml:"llmApi"`
 	}
 
 	if err := yaml.Unmarshal(data, &cfg); err != nil {
@@ -50,6 +52,7 @@ func init() {
 	ResourceDir = cfg.ResourceDir
 	LintDir = cfg.LintDir
 	FixDir = cfg.FixDir
+	ValidateDir = cfg.ValidateDir
 	LLMApi = cfg.LLMApi
 }
 

@@ -24,6 +24,7 @@ bin/
 exported-resources/
 lint-results/
 fix-results/
+validate-results/
 
 # Go workspace file
 go.work
