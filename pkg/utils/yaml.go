@@ -1,13 +1,12 @@
-package parser
+package utils
 
 import (
 	"bufio"
 	"bytes"
 	"fmt"
+	"kubefix-cli/pkg/model"
 	"os"
 	"strings"
-
-	"kubefix-cli/pkg/model"
 
 	"gopkg.in/yaml.v3"
 )

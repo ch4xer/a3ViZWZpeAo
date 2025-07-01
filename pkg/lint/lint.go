@@ -1,3 +1,4 @@
+// Package lint provides functionality to lint Kubernetes manifests using kube-linter.
 package lint
 
 import (
@@ -9,7 +10,6 @@ import (
 	"path/filepath"
 )
 
-// lintFile: lint one file with kube-linter
 func LintFile(filePath, outputPath string) {
 	baseFileName := filepath.Base(filePath)
 	// fileNameWithoutExt := strings.TrimSuffix(baseFileName, filepath.Ext(baseFileName))

@@ -1,18 +1,26 @@
+// Package metrics provides functions to retrieve and process Kubernetes pod metrics such as CPU and memory usage.
 package metrics
 
 import (
 	"context"
 	"fmt"
-	"kubefix-cli/pkg/model"
-	"time"
 	"kubefix-cli/conf"
+	"time"
+
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/tools/clientcmd"
 	metricsclient "k8s.io/metrics/pkg/client/clientset/versioned"
 )
 
-// GetPodCPUAndMemoryUsage 获取指定命名空间下所有 Pod 的 CPU 和内存使用量（单位：mCPU 和 MiB）
-func GetPodCPUAndMemoryUsage(namespace string) ([]model.PodMetrics, error) {
+type PodMetrics struct {
+	Pod         string    `json:"pod_name"`
+	Namespace   string    `json:"namespace"`
+	CPUUsage    string    `json:"cpu_usage"`
+	MemoryUsage string    `json:"memory_usage"`
+	Timestamp   time.Time `json:"timestamp"`
+}
+
+func GetPodCPUAndMemoryUsage(namespace string) ([]PodMetrics, error) {
 	config, err := clientcmd.BuildConfigFromFlags("", conf.Kubeconfig)
 	if err != nil {
 		return nil, fmt.Errorf("加载 kubeconfig 失败: %v", err)
@@ -27,7 +35,7 @@ func GetPodCPUAndMemoryUsage(namespace string) ([]model.PodMetrics, error) {
 	if err != nil {
 		return nil, fmt.Errorf("获取 Pod 指标失败: %v", err)
 	}
-	result := []model.PodMetrics{}
+	result := []PodMetrics{}
 	for _, podMetric := range podMetricsList.Items {
 		cpuTotal := int64(0)
 		memTotal := int64(0)
@@ -38,9 +46,9 @@ func GetPodCPUAndMemoryUsage(namespace string) ([]model.PodMetrics, error) {
 			memTotal += mem
 		}
 
-		var podMatrics model.PodMetrics
+		var podMatrics PodMetrics
 
-		podMatrics.PodName = podMetric.Name
+		podMatrics.Pod = podMetric.Name
 		podMatrics.Namespace = podMetric.Namespace
 		podMatrics.CPUUsage = fmt.Sprintf("%dm", cpuTotal)
 		podMatrics.MemoryUsage = fmt.Sprintf("%dMiB", memTotal)

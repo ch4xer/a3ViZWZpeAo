@@ -1,3 +1,4 @@
+// Package db provide database operations
 package db
 
 import (

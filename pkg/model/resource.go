@@ -13,8 +13,8 @@ type K8sResource struct {
 	APIVersion string                 `yaml:"apiVersion" json:"apiVersion"`
 	Kind       string                 `yaml:"kind" json:"kind"`
 	Metadata   Metadata               `yaml:"metadata" json:"metadata"`
-	Spec       map[string]interface{} `yaml:"spec,omitempty" json:"spec,omitempty"`
-	Status     map[string]interface{} `yaml:"status,omitempty" json:"status,omitempty"`
+	Spec       map[string]any `yaml:"spec,omitempty" json:"spec,omitempty"`
+	Status     map[string]any `yaml:"status,omitempty" json:"status,omitempty"`
 }
 
 // Metadata 定义了K8s资源的元数据
