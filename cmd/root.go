@@ -1,3 +1,4 @@
+// Package cmd provides the root command for kubefix-cli
 package cmd
 
 import (

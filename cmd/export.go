@@ -9,7 +9,6 @@ import (
 	"os"
 
 	"github.com/spf13/cobra"
-
 )
 
 var exportCmd = &cobra.Command{
@@ -19,10 +18,8 @@ var exportCmd = &cobra.Command{
 }
 
 func export(cmd *cobra.Command, args []string) {
-
 	_ = os.MkdirAll(conf.ResourceDir, 0755)
 
-	// 清空输出目录中的所有文件
 	err := utils.CleanDirectory(conf.ResourceDir)
 	if err != nil {
 		fmt.Printf("Error cleaning output directory: %v\n", err)
@@ -43,10 +40,9 @@ func export(cmd *cobra.Command, args []string) {
 	if err != nil {
 		log.Fatalf("Error creating discovery client: %v\n", err)
 	}
-	
+
 	for _, namespace := range namespaces {
 		fmt.Printf("Discovering API resource types in namespace %s...\n", namespace)
-		// 获取服务器支持的API资源类型
 		resourceTypes, err := client.NativeResourceTypes(discoveryClient)
 		if err != nil {
 			fmt.Printf("Error discovering API resource types: %v\n", err)
@@ -54,7 +50,6 @@ func export(cmd *cobra.Command, args []string) {
 		}
 
 		for _, resourceType := range resourceTypes {
-			// 只处理命名空间范围内的资源（跳过集群级别的资源）
 			if resourceType.Namespaced {
 
 				err := client.ExportResource(dynamicClient, resourceType, namespace, conf.ResourceDir)
@@ -64,11 +59,7 @@ func export(cmd *cobra.Command, args []string) {
 			}
 		}
 	}
-
-
 }
-
-
 
 func init() {
 	rootCmd.AddCommand(exportCmd)

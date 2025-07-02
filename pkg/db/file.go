@@ -8,21 +8,21 @@ import (
 
 func init() {
 	pool := dbPool()
-	pool.Exec(context.Background(), "CREATE TABLE IF NOT EXISTS pod_file (id SERIAL PRIMARY KEY,pod TEXT NOT NULL,namespace TEXT NOT NULL,files TEXT[])")
-	pool.Exec(context.Background(), "CREATE INDEX IF NOT EXISTS idx_pod_file_pod ON pod_file(pod)")
+	pool.Exec(context.Background(), "CREATE TABLE IF NOT EXISTS file (pod TEXT NOT NULL,namespace TEXT NOT NULL,files TEXT[],UNIQUE(pod, namespace))")
+	pool.Exec(context.Background(), "CREATE INDEX IF NOT EXISTS idx_file_pod ON file(pod)")
 }
 
 func UpdateFiles(pod, namespace, file string) error {
 	pool := dbPool()
 	files, err := GetFiles(pod, namespace)
 	if err != nil {
-		return err 
+		return err
 	}
 	if slices.Contains(files, file) {
 		return nil
 	}
 	files = append(files, file)
-	query := `INSERT INTO pod_file (pod, namespace, files) VALUES ($1, $2, $3) ON CONFLICT (pod, namespace) DO UPDATE SET files = $3`
+	query := `INSERT INTO file (pod, namespace, files) VALUES ($1, $2, $3) ON CONFLICT (pod, namespace) DO UPDATE SET files = $3`
 	_, err = pool.Exec(context.Background(), query, pod, namespace, files)
 	if err != nil {
 		return fmt.Errorf("UpdateFiles failed: %w", err)
@@ -32,9 +32,9 @@ func UpdateFiles(pod, namespace, file string) error {
 
 func GetFiles(pod, namespace string) ([]string, error) {
 	pool := dbPool()
-	query := `SELECT files FROM pod_file WHERE pod = $1 AND namespace = $2`
+	query := `SELECT files FROM file WHERE pod = $1 AND namespace = $2`
 	row := pool.QueryRow(context.Background(), query, pod, namespace)
-	
+
 	var files []string
 	err := row.Scan(&files)
 	if err != nil {

@@ -39,7 +39,7 @@ func fix(cmd *cobra.Command, args []string) {
 		fmt.Printf("Error scanning lint directory: %v\n", err)
 		os.Exit(1)
 	}
-
+	
 	for _, lintFile := range lintFiles {
 		// get the prefix of lintFile
 		baseFileName := filepath.Base(lintFile)

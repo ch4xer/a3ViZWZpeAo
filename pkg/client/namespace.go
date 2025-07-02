@@ -4,6 +4,7 @@ import (
 	"context"
 	"fmt"
 	"kubefix-cli/conf"
+	"kubefix-cli/pkg/db"
 	"slices"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -26,4 +27,20 @@ func Namespaces() ([]string, error) {
 		result = append(result, ns.Name)
 	}
 	return result, nil
+}
+
+func CollectNamespace() {
+	fmt.Println("Collecting namespaces...")
+	namespaces, err := Namespaces()
+	if err != nil {
+		fmt.Println(err)
+		return
+	}
+	for _, ns := range namespaces {
+		err = db.InsertNamespace(ns)
+		if err != nil {
+			fmt.Println(err)
+		}
+	}
+	fmt.Println("Collecting namespaces finished.")
 }

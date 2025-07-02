@@ -1,8 +1,8 @@
 package main
 
 import (
-	"log"
 	"kubefix-cli/cmd"
+	"log"
 )
 
 func init() {
@@ -12,5 +12,3 @@ func init() {
 func main() {
 	cmd.Execute()
 }
-
-

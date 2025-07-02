@@ -5,6 +5,8 @@ import (
 	"context"
 	"fmt"
 	"kubefix-cli/conf"
+	"kubefix-cli/pkg/client"
+	"kubefix-cli/pkg/db"
 	"time"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -20,7 +22,7 @@ type PodMetrics struct {
 	Timestamp   time.Time `json:"timestamp"`
 }
 
-func GetPodCPUAndMemoryUsage(namespace string) ([]PodMetrics, error) {
+func getPodCPUAndMemoryUsage(namespace string) ([]PodMetrics, error) {
 	config, err := clientcmd.BuildConfigFromFlags("", conf.Kubeconfig)
 	if err != nil {
 		return nil, fmt.Errorf("加载 kubeconfig 失败: %v", err)
@@ -56,4 +58,32 @@ func GetPodCPUAndMemoryUsage(namespace string) ([]PodMetrics, error) {
 		result = append(result, podMatrics)
 	}
 	return result, nil
+}
+
+func ObservePodMetrics() {
+	ticker := time.NewTicker(time.Minute)
+	defer ticker.Stop()
+	fmt.Println("Starting metrics collection for all pods in namespaces...")
+	for range ticker.C {
+		namespaces, err := client.Namespaces()
+		if err != nil {
+			fmt.Printf("Error fetching namespaces: %v", err)
+			return
+		}
+		for _, ns := range namespaces {
+			fmt.Printf("Collecting metrics for namespace: %s\n", ns)
+			podMetrics, err := getPodCPUAndMemoryUsage(ns)
+			if err != nil {
+				fmt.Printf("Error collecting metrics for namespace %s: %v", ns, err)
+				continue
+			}
+			for _, metrics := range podMetrics {
+				err := db.InsertMetrics(metrics.Pod, metrics.Namespace, metrics.CPUUsage, metrics.MemoryUsage)
+				if err != nil {
+					fmt.Printf("Error inserting metrics for pod %s in namespace %s: %v", metrics.Pod, ns, err)
+					continue
+				}
+			}
+		}
+	}
 }

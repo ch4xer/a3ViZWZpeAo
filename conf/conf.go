@@ -1,3 +1,4 @@
+// Package conf provides configuration management for kubefix-cli
 package conf
 
 import (
@@ -12,6 +13,7 @@ var (
 	Kubeconfig       string
 	IgnoreNamespaces []string
 	Database         string
+	ObserveTime      int
 	ResourceDir      string
 	LintDir          string
 	FixDir           string
@@ -35,6 +37,7 @@ func init() {
 		Kubeconfig       string   `yaml:"kubeconfig"`
 		IgnoreNamespaces []string `yaml:"ignoreNamespaces"`
 		Database         string   `yaml:"database"`
+		ObserveTime      int      `yaml:"observeTime"`
 		ResourceDir      string   `yaml:"resourceDir"`
 		LintDir          string   `yaml:"lintDir"`
 		FixDir           string   `yaml:"fixDir"`
@@ -49,6 +52,7 @@ func init() {
 	Kubeconfig = cfg.Kubeconfig
 	IgnoreNamespaces = cfg.IgnoreNamespaces
 	Database = cfg.Database
+	ObserveTime = cfg.ObserveTime
 	ResourceDir = cfg.ResourceDir
 	LintDir = cfg.LintDir
 	FixDir = cfg.FixDir

@@ -9,14 +9,14 @@ import (
 
 func init() {
 	pool := dbPool()
-	pool.Exec(context.Background(), "CREATE TABLE IF NOT EXISTS pod_metrics (id SERIAL PRIMARY KEY,pod TEXT NOT NULL,namespace TEXT NOT NULL,cpu_usage TEXT NOT NULL,memory_usage TEXT NOT NULL,timestamp TIMESTAMP NOT NULL)")
-	pool.Exec(context.Background(), "CREATE INDEX IF NOT EXISTS idx_pod_metrics_pod ON pod_metrics(pod)")
-	pool.Exec(context.Background(), "CREATE INDEX IF NOT EXISTS idx_pod_metrics_timestamp ON pod_metrics(timestamp)")
+	pool.Exec(context.Background(), "CREATE TABLE IF NOT EXISTS metrics (pod TEXT NOT NULL,namespace TEXT NOT NULL,cpu_usage TEXT NOT NULL,memory_usage TEXT NOT NULL,timestamp TIMESTAMP NOT NULL)")
+	pool.Exec(context.Background(), "CREATE INDEX IF NOT EXISTS idx_metrics_pod ON metrics(pod)")
+	pool.Exec(context.Background(), "CREATE INDEX IF NOT EXISTS idx_metrics_timestamp ON metrics(timestamp)")
 }
 
 func InsertMetrics(pod, namespace, cpu, memory string) error {
 	pool := dbPool()
-	query := `INSERT INTO pod_metrics (pod, namespace, cpu_usage, memory_usage, timestamp) VALUES ($1, $2, $3, $4, $5)`
+	query := `INSERT INTO metrics (pod, namespace, cpu_usage, memory_usage, timestamp) VALUES ($1, $2, $3, $4, $5)`
 	_, err := pool.Exec(context.Background(), query, pod, namespace, cpu, memory, time.Now())
 	if err != nil {
 		return fmt.Errorf("InsertMetric failed: %w", err)
@@ -27,7 +27,7 @@ func InsertMetrics(pod, namespace, cpu, memory string) error {
 // GetMetrics 查询指定 pod 和 namespace 的最近 limit 条指标记录
 func GetMetrics(pod, namespace string, limit int) string {
 	pool := dbPool()
-	query := `SELECT pod, namespace, cpu_usage, memory_usage, timestamp FROM pod_metrics WHERE pod = $1 AND namespace = $2 ORDER BY timestamp DESC LIMIT $3`
+	query := `SELECT pod, namespace, cpu_usage, memory_usage, timestamp FROM metrics WHERE pod = $1 AND namespace = $2 ORDER BY timestamp DESC LIMIT $3`
 
 	rows, err := pool.Query(context.Background(), query, pod, namespace, limit)
 	if err != nil {

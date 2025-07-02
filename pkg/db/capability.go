@@ -8,8 +8,8 @@ import (
 
 func init() {
 	pool := dbPool()
-	pool.Exec(context.Background(), "CREATE TABLE IF NOT EXISTS pod_capability (id SERIAL PRIMARY KEY,pod TEXT NOT NULL,namespace TEXT NOT NULL,caps TEXT[])")
-	pool.Exec(context.Background(), "CREATE INDEX IF NOT EXISTS idx_pod_capability_pod ON pod_capability(pod)")
+	pool.Exec(context.Background(), "CREATE TABLE IF NOT EXISTS capability (pod TEXT NOT NULL,namespace TEXT NOT NULL,caps TEXT[])")
+	pool.Exec(context.Background(), "CREATE INDEX IF NOT EXISTS idx_capability_pod ON capability(pod)")
 }
 
 func UpdateCaps(pod, namespace, cap string) error {
@@ -22,7 +22,7 @@ func UpdateCaps(pod, namespace, cap string) error {
 		return nil // cap already exists, no need to update
 	}
 	caps = append(caps, cap)
-	query := `INSERT INTO pod_capability (pod, namespace, caps) VALUES ($1, $2, $3) ON CONFLICT (pod, namespace) DO UPDATE SET caps = $3`
+	query := `INSERT INTO capability (pod, namespace, caps) VALUES ($1, $2, $3) ON CONFLICT (pod, namespace) DO UPDATE SET caps = $3`
 	_, err = pool.Exec(context.Background(), query, pod, namespace, caps)
 	if err != nil {
 		return fmt.Errorf("UpdateCaps failed: %w", err)
@@ -32,7 +32,7 @@ func UpdateCaps(pod, namespace, cap string) error {
 
 func GetCaps(pod, namespace string) ([]string, error) {
 	pool := dbPool()
-	query := `SELECT caps FROM pod_capability WHERE pod = $1 AND namespace = $2`
+	query := `SELECT caps FROM capability WHERE pod = $1 AND namespace = $2`
 	row := pool.QueryRow(context.Background(), query, pod, namespace)
 
 	var caps []string
